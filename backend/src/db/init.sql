@@ -1,0 +1,91 @@
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT NOT NULL UNIQUE,
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  language TEXT DEFAULT 'de',
+  theme TEXT DEFAULT 'dark',
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS rooms (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  code TEXT NOT NULL UNIQUE,
+  owner_id INTEGER NOT NULL,
+  status TEXT DEFAULT 'open',
+  selected_movie_id INTEGER,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (owner_id) REFERENCES users(id),
+  FOREIGN KEY (selected_movie_id) REFERENCES movies(id)
+);
+
+CREATE TABLE IF NOT EXISTS room_members (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  room_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  role TEXT DEFAULT 'member',
+  joined_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(room_id, user_id),
+  FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS movies (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  room_id INTEGER NOT NULL,
+  added_by INTEGER NOT NULL,
+
+  tmdb_id INTEGER,
+  title TEXT NOT NULL,
+  original_title TEXT,
+  overview TEXT,
+  poster_path TEXT,
+  release_date TEXT,
+  rating REAL,
+
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
+  FOREIGN KEY (added_by) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS votes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  room_id INTEGER NOT NULL,
+  movie_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+
+  UNIQUE(room_id, user_id),
+  FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
+  FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  room_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  message TEXT NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS watchlist (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+
+  tmdb_id INTEGER,
+  title TEXT NOT NULL,
+  poster_path TEXT,
+  release_date TEXT,
+  rating REAL,
+
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+
+  UNIQUE(user_id, tmdb_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
