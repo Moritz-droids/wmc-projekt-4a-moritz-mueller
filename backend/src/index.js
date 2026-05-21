@@ -1,12 +1,18 @@
 import express from "express";
-import db from "./db/database.js";
+import cors from "cors";
+import "dotenv/config";
+
+import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
+app.use("/api/auth", authRoutes);
+
 app.get("/", (req, res) => {
-  res.send("Backend läuft");
+  res.send("Movie Night Planner Backend läuft");
 });
 
 app.listen(3000, () => {
