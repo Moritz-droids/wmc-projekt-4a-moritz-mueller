@@ -16,3 +16,24 @@ Content-Type: application/json
   "email": "moritz@example.com",
   "password": "123456"
 }
+
+### Create Room
+POST http://localhost:3000/api/rooms
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoibW9yaXR6IiwiaWF0IjoxNzc5ODIyODMzLCJleHAiOjE3ODA0Mjc2MzN9.WF6LG0lRRNUmqL5L6ZKiXHHw7BE4iMQ4aahO4A2shwM
+
+{
+  "name": "Saturday Movie Night"
+}
+
+### Get Room By Code
+GET http://localhost:3000/api/rooms/code/RLIBBC
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoibW9yaXR6IiwiaWF0IjoxNzc5ODIyODMzLCJleHAiOjE3ODA0Mjc2MzN9.WF6LG0lRRNUmqL5L6ZKiXHHw7BE4iMQ4aahO4A2shwM
+
+### Join Room
+POST http://localhost:3000/api/rooms/1/join
+Authorization: Bearer DEIN_TOKEN
+
+### Get Room By ID
+GET http://localhost:3000/api/rooms/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoibW9yaXR6IiwiaWF0IjoxNzc5ODIyODMzLCJleHAiOjE3ODA0Mjc2MzN9.WF6LG0lRRNUmqL5L6ZKiXHHw7BE4iMQ4aahO4A2shwM
