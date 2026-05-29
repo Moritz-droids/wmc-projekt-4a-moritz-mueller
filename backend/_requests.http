@@ -37,3 +37,26 @@ Authorization: Bearer DEIN_TOKEN
 ### Get Room By ID
 GET http://localhost:3000/api/rooms/1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoibW9yaXR6IiwiaWF0IjoxNzc5ODIyODMzLCJleHAiOjE3ODA0Mjc2MzN9.WF6LG0lRRNUmqL5L6ZKiXHHw7BE4iMQ4aahO4A2shwM
+
+### Search Movies
+GET http://localhost:3000/api/movies/search?query=interstellar&language=de-DE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoibW9yaXR6IiwiaWF0IjoxNzc5ODIyODMzLCJleHAiOjE3ODA0Mjc2MzN9.WF6LG0lRRNUmqL5L6ZKiXHHw7BE4iMQ4aahO4A2shwM
+
+### Add Movie To Room
+POST http://localhost:3000/api/rooms/1/movies
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoibW9yaXR6IiwiaWF0IjoxNzc5ODIyODMzLCJleHAiOjE3ODA0Mjc2MzN9.WF6LG0lRRNUmqL5L6ZKiXHHw7BE4iMQ4aahO4A2shwM
+
+{
+  "tmdb_id": 157336,
+  "title": "Interstellar",
+  "original_title": "Interstellar",
+  "overview": "Ein Science-Fiction-Film...",
+  "poster_path": "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+  "release_date": "2014-11-05",
+  "rating": 8.4
+}
+
+### Get Movies By Room
+GET http://localhost:3000/api/rooms/1/movies
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoibW9yaXR6IiwiaWF0IjoxNzc5ODIyODMzLCJleHAiOjE3ODA0Mjc2MzN9.WF6LG0lRRNUmqL5L6ZKiXHHw7BE4iMQ4aahO4A2shwM
