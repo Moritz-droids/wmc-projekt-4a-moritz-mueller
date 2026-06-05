@@ -60,3 +60,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZ
 ### Get Movies By Room
 GET http://localhost:3000/api/rooms/1/movies
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoibW9yaXR6IiwiaWF0IjoxNzc5ODIyODMzLCJleHAiOjE3ODA0Mjc2MzN9.WF6LG0lRRNUmqL5L6ZKiXHHw7BE4iMQ4aahO4A2shwM
+
+### Vote for Movie
+POST http://localhost:3000/api/rooms/1/votes
+Content-Type: application/json
+Authorization: Bearer DEIN_TOKEN
+
+{
+  "movieId": 1
+}
+
+### Get Vote Results
+GET http://localhost:3000/api/rooms/1/results
+Authorization: Bearer DEIN_TOKEN

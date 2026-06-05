@@ -5,6 +5,7 @@ import "dotenv/config";
 import authRoutes from "./routes/auth.routes.js";
 import roomRoutes from "./routes/room.routes.js";
 import movieRoutes from "./routes/movie.routes.js";
+import voteRoutes from "./routes/vote.routes.js";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api", movieRoutes);
+app.use("/api/rooms", voteRoutes);
 
 app.get("/", (req, res) => {
   res.send("Movie Night Planner Backend läuft");
