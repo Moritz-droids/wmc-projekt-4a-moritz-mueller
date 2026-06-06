@@ -73,3 +73,15 @@ Authorization: Bearer DEIN_TOKEN
 ### Get Vote Results
 GET http://localhost:3000/api/rooms/1/results
 Authorization: Bearer DEIN_TOKEN
+### Get Messages By Room
+GET http://localhost:3000/api/rooms/1/messages
+Authorization: Bearer DEIN_TOKEN
+
+### Create Message
+POST http://localhost:3000/api/rooms/1/messages
+Content-Type: application/json
+Authorization: Bearer DEIN_TOKEN
+
+{
+  "message": "Ich wäre für Interstellar."
+}
