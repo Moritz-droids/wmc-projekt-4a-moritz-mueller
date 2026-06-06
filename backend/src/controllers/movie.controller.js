@@ -1,4 +1,5 @@
 import db from "../db/database.js";
+import { emitMovieNew } from "../sockets/room.socket.js";
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
@@ -145,6 +146,10 @@ export async function addMovieToRoom(req, res) {
     const movie = await db.get("SELECT * FROM movies WHERE id = ?", [
       result.lastID,
     ]);
+
+    const io = req.app.get("io");
+
+    emitMovieNew(io, roomId, movie);
 
     res.status(201).json({
       message: "Movie added to room successfully",

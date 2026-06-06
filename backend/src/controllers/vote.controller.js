@@ -1,4 +1,5 @@
 import db from "../db/database.js";
+import { emitVoteUpdate } from "../sockets/room.socket.js";
 
 async function getRoom(roomId) {
   return await db.get("SELECT * FROM rooms WHERE id = ?", [roomId]);
@@ -107,6 +108,15 @@ export async function castVote(req, res) {
       `,
       [roomId],
     );
+
+    const io = req.app.get("io");
+
+    emitVoteUpdate(io, roomId, {
+      roomId: Number(roomId),
+      votedMovieId: Number(movieId),
+      votedByUserId: userId,
+      results: updatedResults,
+    });
 
     res.json({
       message: existingVote
