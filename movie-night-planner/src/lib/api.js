@@ -45,3 +45,26 @@ export const authApi = {
 		});
 	}
 };
+
+export const roomApi = {
+	createRoom({ name }) {
+		return api('/api/rooms', {
+			method: 'POST',
+			body: JSON.stringify({ name })
+		});
+	},
+
+	getRoomByCode(code) {
+		return api(`/api/rooms/code/${code}`);
+	},
+
+	joinRoom(roomId) {
+		return api(`/api/rooms/${roomId}/join`, {
+			method: 'POST'
+		});
+	},
+
+	getRoom(roomId) {
+		return api(`/api/rooms/${roomId}`);
+	}
+};
