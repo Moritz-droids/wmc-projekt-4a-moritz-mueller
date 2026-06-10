@@ -68,3 +68,25 @@ export const roomApi = {
 		return api(`/api/rooms/${roomId}`);
 	}
 };
+
+export const movieApi = {
+	searchMovies(query, language = 'de-DE') {
+		const params = new URLSearchParams({
+			query,
+			language
+		});
+
+		return api(`/api/movies/search?${params.toString()}`);
+	},
+
+	addMovieToRoom(roomId, movie) {
+		return api(`/api/rooms/${roomId}/movies`, {
+			method: 'POST',
+			body: JSON.stringify(movie)
+		});
+	},
+
+	getRoomMovies(roomId) {
+		return api(`/api/rooms/${roomId}/movies`);
+	}
+};
