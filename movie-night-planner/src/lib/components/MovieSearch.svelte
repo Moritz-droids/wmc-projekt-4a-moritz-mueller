@@ -9,9 +9,17 @@
 	let addingMovieId = $state(null);
 	let error = $state('');
 	let success = $state('');
+	let hasSearched = $state(false);
 
 	function getSearchResults(data) {
-		return data?.results || data?.movies || data?.data?.results || data?.data?.movies || [];
+		if (Array.isArray(data)) return data;
+		if (Array.isArray(data?.results)) return data.results;
+		if (Array.isArray(data?.movies)) return data.movies;
+		if (Array.isArray(data?.data)) return data.data;
+		if (Array.isArray(data?.data?.results)) return data.data.results;
+		if (Array.isArray(data?.data?.movies)) return data.data.movies;
+
+		return [];
 	}
 
 	function getPosterUrl(posterPath) {
@@ -46,11 +54,13 @@
 
 		error = '';
 		success = '';
+		hasSearched = true;
 
 		const searchQuery = query.trim();
 
 		if (!searchQuery) {
 			error = 'Bitte gib einen Filmtitel ein.';
+			results = [];
 			return;
 		}
 
@@ -186,7 +196,7 @@
 				</article>
 			{/each}
 		</div>
-	{:else if !loading && query.trim()}
+	{:else if hasSearched && !loading && !error}
 		<p class="mt-6 text-sm text-slate-500">Keine Suchergebnisse gefunden.</p>
 	{/if}
 </section>
