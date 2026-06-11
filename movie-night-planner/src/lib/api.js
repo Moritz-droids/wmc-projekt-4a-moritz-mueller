@@ -112,3 +112,9 @@ export const voteApi = {
 		return api(`/api/rooms/${roomId}/results`);
 	}
 };
+
+export const messageApi = {
+	getMessages(roomId) {
+		return api(`/api/rooms/${roomId}/messages`);
+	}
+};

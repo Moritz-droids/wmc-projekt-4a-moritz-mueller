@@ -1,7 +1,8 @@
 <script>
 	import { movieApi } from '$lib/api.js';
+	import { languageState } from '$lib/states/languageState.svelte.js';
 
-	let { roomId, language = 'de-DE', onMovieAdded = null } = $props();
+	let { roomId, onMovieAdded = null } = $props();
 
 	let query = $state('');
 	let results = $state([]);
@@ -33,7 +34,7 @@
 	}
 
 	function getYear(releaseDate) {
-		if (!releaseDate) return 'Unbekannt';
+		if (!releaseDate) return languageState.t('movieSearch.unknownYear');
 		return releaseDate.slice(0, 4);
 	}
 
@@ -59,7 +60,7 @@
 		const searchQuery = query.trim();
 
 		if (!searchQuery) {
-			error = 'Bitte gib einen Filmtitel ein.';
+			error = languageState.t('movieSearch.errorRequired');
 			results = [];
 			return;
 		}
@@ -68,7 +69,7 @@
 		results = [];
 
 		try {
-			const data = await movieApi.searchMovies(searchQuery, language);
+			const data = await movieApi.searchMovies(searchQuery, languageState.currentLanguage);
 			results = getSearchResults(data);
 		} catch (err) {
 			error = err.message;
@@ -86,7 +87,7 @@
 			const moviePayload = normalizeMovie(movie);
 			const data = await movieApi.addMovieToRoom(roomId, moviePayload);
 
-			success = `"${movie.title}" wurde zum Raum hinzugefügt.`;
+			success = languageState.t('movieSearch.success', { title: movie.title });
 
 			if (typeof onMovieAdded === 'function') {
 				await onMovieAdded(data);
@@ -101,10 +102,8 @@
 
 <section class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
 	<div class="mb-5">
-		<h2 class="text-xl font-semibold">Film suchen</h2>
-		<p class="mt-2 text-sm text-slate-400">
-			Suche nach Filmen und füge sie als Vorschlag zu diesem Raum hinzu.
-		</p>
+		<h2 class="text-xl font-semibold">{languageState.t('movieSearch.title')}</h2>
+		<p class="mt-2 text-sm text-slate-400">{languageState.t('movieSearch.help')}</p>
 	</div>
 
 	<form onsubmit={handleSearch} class="flex flex-col gap-3 sm:flex-row">
@@ -112,7 +111,7 @@
 			bind:value={query}
 			type="text"
 			class="min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-indigo-500"
-			placeholder="z.B. Interstellar"
+			placeholder={languageState.t('movieSearch.placeholder')}
 		/>
 
 		<button
@@ -120,7 +119,7 @@
 			disabled={loading}
 			class="rounded-lg bg-indigo-500 px-5 py-3 font-semibold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
 		>
-			{loading ? 'Suche...' : 'Suchen'}
+			{loading ? languageState.t('movieSearch.searching') : languageState.t('movieSearch.search')}
 		</button>
 	</form>
 
@@ -154,7 +153,7 @@
 						<div
 							class="flex h-32 w-20 shrink-0 items-center justify-center rounded-lg bg-slate-800 text-xs text-slate-500"
 						>
-							Kein Poster
+							{languageState.t('room.noPoster')}
 						</div>
 					{/if}
 
@@ -168,7 +167,7 @@
 								<p class="mt-1 text-sm text-slate-500">
 									{getYear(movie.release_date)}
 									{#if movie.vote_average || movie.rating}
-										· Bewertung: {(movie.vote_average || movie.rating).toFixed(1)}
+										· {languageState.t('room.rating')}: {(movie.vote_average || movie.rating).toFixed(1)}
 									{/if}
 								</p>
 							</div>
@@ -180,8 +179,8 @@
 								class="shrink-0 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
 							>
 								{addingMovieId === (movie.id || movie.tmdb_id)
-									? 'Wird hinzugefügt...'
-									: 'Hinzufügen'}
+									? languageState.t('movieSearch.adding')
+									: languageState.t('movieSearch.add')}
 							</button>
 						</div>
 
@@ -190,13 +189,13 @@
 								{movie.overview}
 							</p>
 						{:else}
-							<p class="mt-3 text-sm text-slate-500">Keine Beschreibung verfügbar.</p>
+							<p class="mt-3 text-sm text-slate-500">{languageState.t('room.noDescription')}</p>
 						{/if}
 					</div>
 				</article>
 			{/each}
 		</div>
 	{:else if hasSearched && !loading && !error}
-		<p class="mt-6 text-sm text-slate-500">Keine Suchergebnisse gefunden.</p>
+		<p class="mt-6 text-sm text-slate-500">{languageState.t('movieSearch.noResults')}</p>
 	{/if}
 </section>

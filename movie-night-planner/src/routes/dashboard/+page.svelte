@@ -3,6 +3,7 @@
 	import { resolve } from '$app/paths';
 	import { browser } from '$app/environment';
 	import { authState } from '$lib/states/authState.svelte.js';
+	import { languageState } from '$lib/states/languageState.svelte.js';
 	import { roomApi } from '$lib/api.js';
 
 	let roomName = $state('');
@@ -31,7 +32,7 @@
 		const name = roomName.trim();
 
 		if (!name) {
-			createError = 'Bitte gib einen Raumnamen ein.';
+			createError = languageState.t('dashboard.errorRoomNameRequired');
 			return;
 		}
 
@@ -43,7 +44,7 @@
 			const roomId = room?.id || data?.roomId || data?.id;
 
 			if (!roomId) {
-				throw new Error('Der Raum wurde erstellt, aber es wurde keine Raum-ID zurückgegeben.');
+				throw new Error(languageState.t('dashboard.errorRoomIdMissing'));
 			}
 
 			roomName = '';
@@ -63,7 +64,7 @@
 		const code = roomCode.trim().toUpperCase();
 
 		if (!code) {
-			joinError = 'Bitte gib einen Raumcode ein.';
+			joinError = languageState.t('dashboard.errorRoomCodeRequired');
 			return;
 		}
 
@@ -75,7 +76,7 @@
 			const roomId = room?.id || data?.roomId || data?.id;
 
 			if (!roomId) {
-				throw new Error('Es wurde kein Raum mit diesem Code gefunden.');
+				throw new Error(languageState.t('dashboard.errorRoomNotFound'));
 			}
 
 			await roomApi.joinRoom(roomId);
@@ -93,15 +94,15 @@
 {#if authState.isReady && authState.isLoggedIn}
 	<section class="mx-auto max-w-6xl px-4 py-12">
 		<div class="mb-10">
-			<p class="text-sm font-medium tracking-wide text-indigo-400 uppercase">Dashboard</p>
+			<p class="text-sm font-medium tracking-wide text-indigo-400 uppercase">
+				{languageState.t('app.dashboard')}
+			</p>
 
 			<h1 class="mt-2 text-4xl font-bold">
-				Willkommen, {authState.user.username}
+				{languageState.t('dashboard.welcome', { username: authState.user.username })}
 			</h1>
 
-			<p class="mt-3 max-w-2xl text-slate-400">
-				Erstelle einen neuen Movie-Night-Raum oder tritt einem bestehenden Raum per Code bei.
-			</p>
+			<p class="mt-3 max-w-2xl text-slate-400">{languageState.t('dashboard.subtitle')}</p>
 		</div>
 
 		<div class="grid gap-6 md:grid-cols-2">
@@ -109,11 +110,9 @@
 				onsubmit={handleCreateRoom}
 				class="rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-xl"
 			>
-				<h2 class="text-xl font-semibold">Raum erstellen</h2>
+				<h2 class="text-xl font-semibold">{languageState.t('dashboard.createRoom')}</h2>
 
-				<p class="mt-2 text-sm text-slate-400">
-					Erstelle einen neuen Raum und lade deine Freunde später per Code ein.
-				</p>
+				<p class="mt-2 text-sm text-slate-400">{languageState.t('dashboard.createRoomHelp')}</p>
 
 				{#if createError}
 					<div
@@ -125,7 +124,7 @@
 
 				<div class="mt-5">
 					<label for="roomName" class="mb-2 block text-sm font-medium text-slate-300">
-						Raumname
+						{languageState.t('dashboard.roomName')}
 					</label>
 
 					<input
@@ -142,7 +141,9 @@
 					disabled={createLoading}
 					class="mt-5 w-full rounded-lg bg-indigo-500 px-4 py-3 font-semibold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
 				>
-					{createLoading ? 'Raum wird erstellt...' : 'Raum erstellen'}
+					{createLoading
+						? languageState.t('dashboard.createLoading')
+						: languageState.t('dashboard.createRoom')}
 				</button>
 			</form>
 
@@ -150,11 +151,9 @@
 				onsubmit={handleJoinRoom}
 				class="rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-xl"
 			>
-				<h2 class="text-xl font-semibold">Raum beitreten</h2>
+				<h2 class="text-xl font-semibold">{languageState.t('dashboard.joinRoom')}</h2>
 
-				<p class="mt-2 text-sm text-slate-400">
-					Gib den Raumcode ein, den du von einem Freund bekommen hast.
-				</p>
+				<p class="mt-2 text-sm text-slate-400">{languageState.t('dashboard.joinRoomHelp')}</p>
 
 				{#if joinError}
 					<div
@@ -166,7 +165,7 @@
 
 				<div class="mt-5">
 					<label for="roomCode" class="mb-2 block text-sm font-medium text-slate-300">
-						Raumcode
+						{languageState.t('dashboard.roomCode')}
 					</label>
 
 					<input
@@ -183,7 +182,9 @@
 					disabled={joinLoading}
 					class="mt-5 w-full rounded-lg bg-slate-800 px-4 py-3 font-semibold text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
 				>
-					{joinLoading ? 'Beitritt läuft...' : 'Raum beitreten'}
+					{joinLoading
+						? languageState.t('dashboard.joinLoading')
+						: languageState.t('dashboard.joinRoom')}
 				</button>
 			</form>
 		</div>

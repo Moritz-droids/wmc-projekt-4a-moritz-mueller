@@ -93,6 +93,20 @@ export async function addMovieToRoom(req, res) {
       });
     }
 
+    const room = await db.get("SELECT * FROM rooms WHERE id = ?", [roomId]);
+
+    if (!room) {
+      return res.status(404).json({
+        error: "Room not found",
+      });
+    }
+
+    if (room.status === "closed") {
+      return res.status(409).json({
+        error: "Voting is closed for this room",
+      });
+    }
+
     const isMember = await isUserRoomMember(roomId, userId);
 
     if (!isMember) {

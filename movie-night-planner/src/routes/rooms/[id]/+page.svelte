@@ -4,8 +4,10 @@
 	import { resolve } from '$app/paths';
 	import { browser } from '$app/environment';
 	import { authState } from '$lib/states/authState.svelte.js';
+	import { languageState } from '$lib/states/languageState.svelte.js';
 	import { roomApi, movieApi, voteApi } from '$lib/api.js';
 	import MovieSearch from '$lib/components/MovieSearch.svelte';
+	import RoomChat from '$lib/components/RoomChat.svelte';
 
 	let room = $state(null);
 	let members = $state([]);
@@ -92,7 +94,7 @@
 	}
 
 	function getYear(releaseDate) {
-		if (!releaseDate) return 'Unbekannt';
+		if (!releaseDate) return languageState.t('movieSearch.unknownYear');
 		return releaseDate.slice(0, 4);
 	}
 
@@ -221,14 +223,14 @@
 
 	async function handleVote(movie) {
 		if (isVotingClosed()) {
-			voteError = 'Das Voting ist bereits beendet.';
+			voteError = languageState.t('room.errorVotingClosed');
 			return;
 		}
 
 		const movieId = getMovieId(movie);
 
 		if (!movieId) {
-			voteError = 'Für diesen Film wurde keine Movie-ID gefunden.';
+			voteError = languageState.t('room.errorMovieIdMissing');
 			return;
 		}
 
@@ -270,13 +272,13 @@
 				href={resolve('/dashboard')}
 				class="text-sm font-medium text-indigo-400 hover:text-indigo-300"
 			>
-				← Zurück zum Dashboard
+				← {languageState.t('room.back')}
 			</a>
 		</div>
 
 		{#if loading}
 			<div class="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-slate-300">
-				Raum wird geladen...
+				{languageState.t('room.loading')}
 			</div>
 		{:else if error}
 			<div class="rounded-2xl border border-red-500/40 bg-red-500/10 p-8 text-red-300">
@@ -293,13 +295,15 @@
 						</h1>
 
 						<p class="mt-3 text-slate-400">
-							Status: {room.status || 'open'}
+							{languageState.t('room.status', { status: room.status || 'open' })}
 						</p>
 					</div>
 
 					{#if room.code}
 						<div class="rounded-xl border border-slate-700 bg-slate-950 px-5 py-4 text-center">
-							<p class="text-xs font-medium tracking-wide text-slate-400 uppercase">Raumcode</p>
+							<p class="text-xs font-medium tracking-wide text-slate-400 uppercase">
+								{languageState.t('room.code')}
+							</p>
 
 							<p class="mt-1 text-2xl font-bold tracking-widest text-white">
 								{room.code}
@@ -314,11 +318,11 @@
 					<div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
 						<div>
 							<p class="text-sm font-medium tracking-wide text-emerald-300 uppercase">
-								Aktueller Gewinner
+								{languageState.t('room.currentWinner')}
 							</p>
 
 							{#if isVotingClosed()}
-								<p class="mt-2 text-sm text-emerald-100">Das Voting ist beendet.</p>
+								<p class="mt-2 text-sm text-emerald-100">{languageState.t('room.votingClosed')}</p>
 							{/if}
 						</div>
 
@@ -329,7 +333,9 @@
 								disabled={closingVoting}
 								class="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
 							>
-								{closingVoting ? 'Voting wird beendet...' : 'Voting beenden'}
+								{closingVoting
+									? languageState.t('room.closingVoting')
+									: languageState.t('room.closeVoting')}
 							</button>
 						{/if}
 					</div>
@@ -343,7 +349,9 @@
 
 								<p class="mt-1 text-sm text-emerald-300">
 									{getVoteCountForMovie(winnerMovie)}
-									{getVoteCountForMovie(winnerMovie) === 1 ? ' Stimme' : ' Stimmen'}
+									{getVoteCountForMovie(winnerMovie) === 1
+										? languageState.t('room.voteSingular')
+										: languageState.t('room.votePlural')}
 								</p>
 							</div>
 						{/each}
@@ -353,17 +361,24 @@
 
 			<div class="grid gap-6 lg:grid-cols-3">
 				<div class="space-y-6 lg:col-span-2">
-					<MovieSearch {roomId} language="de-DE" onMovieAdded={handleMovieAdded} />
+					{#if isVotingClosed()}
+						<section class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+							<h2 class="text-xl font-semibold">{languageState.t('movieSearch.title')}</h2>
+							<p class="mt-2 text-sm text-slate-400">{languageState.t('room.addClosed')}</p>
+						</section>
+					{:else}
+						<MovieSearch {roomId} onMovieAdded={handleMovieAdded} />
+					{/if}
 
 					<section class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
 						<div class="flex items-center justify-between gap-4">
 							<div>
-								<h2 class="text-xl font-semibold">Film-Vorschläge</h2>
+								<h2 class="text-xl font-semibold">{languageState.t('room.movieSuggestions')}</h2>
 								<p class="mt-2 text-sm text-slate-400">
 									{#if isVotingClosed()}
-										Das Voting ist beendet. Stimmen koennen nicht mehr geaendert werden.
+										{languageState.t('room.votingClosedLong')}
 									{:else}
-										Stimme für deinen Favoriten ab. Du kannst deine Stimme jederzeit ändern.
+										{languageState.t('room.voteHelp')}
 									{/if}
 								</p>
 							</div>
@@ -374,7 +389,9 @@
 								disabled={moviesLoading || resultsLoading}
 								class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
 							>
-								{moviesLoading || resultsLoading ? 'Lädt...' : 'Aktualisieren'}
+								{moviesLoading || resultsLoading
+									? languageState.t('room.loadingShort')
+									: languageState.t('room.refresh')}
 							</button>
 						</div>
 
@@ -398,7 +415,7 @@
 							<div
 								class="mt-6 rounded-xl border border-slate-800 bg-slate-950 p-8 text-center text-slate-400"
 							>
-								Filme werden geladen...
+								{languageState.t('room.moviesLoading')}
 							</div>
 						{:else if movies.length > 0}
 							<div class="mt-6 grid gap-4">
@@ -426,7 +443,7 @@
 											<div
 												class="flex h-36 w-24 shrink-0 items-center justify-center rounded-lg bg-slate-800 text-xs text-slate-500"
 											>
-												Kein Poster
+												{languageState.t('room.noPoster')}
 											</div>
 										{/if}
 
@@ -444,7 +461,7 @@
 															<span
 																class="rounded-full bg-emerald-500/20 px-2 py-1 text-xs font-medium text-emerald-300"
 															>
-																Gewinner
+																{languageState.t('room.winner')}
 															</span>
 														{/if}
 
@@ -452,7 +469,7 @@
 															<span
 																class="rounded-full bg-indigo-500/20 px-2 py-1 text-xs font-medium text-indigo-300"
 															>
-																Deine Stimme
+																{languageState.t('room.yourVoteBadge')}
 															</span>
 														{/if}
 													</div>
@@ -460,7 +477,7 @@
 													<p class="mt-1 text-sm text-slate-500">
 														{getYear(movie.release_date)}
 														{#if movie.rating}
-															· Bewertung: {Number(movie.rating).toFixed(1)}
+															· {languageState.t('room.rating')}: {Number(movie.rating).toFixed(1)}
 														{/if}
 													</p>
 												</div>
@@ -468,7 +485,9 @@
 												<div class="shrink-0 text-left md:text-right">
 													<p class="mb-2 text-sm font-medium text-slate-300">
 														{voteCount}
-														{voteCount === 1 ? ' Stimme' : ' Stimmen'}
+														{voteCount === 1
+															? languageState.t('room.voteSingular')
+															: languageState.t('room.votePlural')}
 													</p>
 
 													<button
@@ -482,13 +501,13 @@
 														}`}
 													>
 														{#if isVotingClosed()}
-															Voting beendet
+															{languageState.t('room.votingEnded')}
 														{:else if votingMovieId === getMovieId(movie)}
-															Stimme wird gespeichert...
+															{languageState.t('room.savingVote')}
 														{:else if selectedByUser}
-															Ausgewählt
+															{languageState.t('room.selected')}
 														{:else}
-															Abstimmen
+															{languageState.t('room.vote')}
 														{/if}
 													</button>
 												</div>
@@ -499,7 +518,9 @@
 													{movie.overview}
 												</p>
 											{:else}
-												<p class="mt-3 text-sm text-slate-500">Keine Beschreibung verfügbar.</p>
+												<p class="mt-3 text-sm text-slate-500">
+													{languageState.t('room.noDescription')}
+												</p>
 											{/if}
 										</div>
 									</article>
@@ -509,7 +530,7 @@
 							<div
 								class="mt-6 rounded-xl border border-dashed border-slate-700 bg-slate-950 p-8 text-center text-slate-500"
 							>
-								Noch keine Filme hinzugefügt.
+								{languageState.t('room.noMovies')}
 							</div>
 						{/if}
 					</section>
@@ -517,18 +538,18 @@
 
 				<aside class="space-y-6">
 					<section class="h-fit rounded-2xl border border-slate-800 bg-slate-900 p-6">
-						<h2 class="text-xl font-semibold">Voting</h2>
+						<h2 class="text-xl font-semibold">{languageState.t('room.voting')}</h2>
 
 						<div class="mt-5 rounded-xl border border-slate-800 bg-slate-950 p-4">
-							<p class="text-sm text-slate-400">Deine aktuelle Stimme</p>
+							<p class="text-sm text-slate-400">{languageState.t('room.yourCurrentVote')}</p>
 
 							{#if getUserVoteMovieId()}
 								<p class="mt-2 font-semibold text-indigo-300">
 									{movies.find((movie) => idsMatch(getMovieId(movie), getUserVoteMovieId()))
-										?.title || 'Film gewählt'}
+										?.title || languageState.t('room.movieSelected')}
 								</p>
 							{:else}
-								<p class="mt-2 text-sm text-slate-500">Du hast noch nicht abgestimmt.</p>
+								<p class="mt-2 text-sm text-slate-500">{languageState.t('room.noVoteYet')}</p>
 							{/if}
 						</div>
 
@@ -538,19 +559,21 @@
 							disabled={resultsLoading}
 							class="mt-4 w-full rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
 						>
-							{resultsLoading ? 'Ergebnisse werden geladen...' : 'Ergebnisse aktualisieren'}
+							{resultsLoading
+								? languageState.t('room.resultsLoading')
+								: languageState.t('room.refreshResults')}
 						</button>
 					</section>
 
 					<section class="h-fit rounded-2xl border border-slate-800 bg-slate-900 p-6">
-						<h2 class="text-xl font-semibold">Teilnehmer</h2>
+						<h2 class="text-xl font-semibold">{languageState.t('room.participants')}</h2>
 
 						{#if members.length > 0}
 							<ul class="mt-5 space-y-3">
 								{#each members as member (member.id || member.user_id || member.user?.id)}
 									<li class="rounded-lg border border-slate-800 bg-slate-950 px-4 py-3">
 										<p class="font-medium">
-											{member.username || member.user?.username || 'Unbekannter User'}
+											{member.username || member.user?.username || languageState.t('room.unknownUser')}
 										</p>
 
 										{#if member.role}
@@ -562,9 +585,11 @@
 								{/each}
 							</ul>
 						{:else}
-							<p class="mt-4 text-sm text-slate-400">Keine Teilnehmer gefunden.</p>
+							<p class="mt-4 text-sm text-slate-400">{languageState.t('room.noParticipants')}</p>
 						{/if}
 					</section>
+
+					<RoomChat {roomId} />
 				</aside>
 			</div>
 		{/if}
