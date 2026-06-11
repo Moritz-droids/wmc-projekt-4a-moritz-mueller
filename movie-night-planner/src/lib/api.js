@@ -66,6 +66,12 @@ export const roomApi = {
 
 	getRoom(roomId) {
 		return api(`/api/rooms/${roomId}`);
+	},
+
+	closeVoting(roomId) {
+		return api(`/api/rooms/${roomId}/close-voting`, {
+			method: 'PATCH'
+		});
 	}
 };
 
@@ -88,5 +94,21 @@ export const movieApi = {
 
 	getRoomMovies(roomId) {
 		return api(`/api/rooms/${roomId}/movies`);
+	}
+};
+
+export const voteApi = {
+	voteForMovie(roomId, movieId) {
+		return api(`/api/rooms/${roomId}/votes`, {
+			method: 'POST',
+			body: JSON.stringify({
+				movieId,
+				movie_id: movieId
+			})
+		});
+	},
+
+	getResults(roomId) {
+		return api(`/api/rooms/${roomId}/results`);
 	}
 };

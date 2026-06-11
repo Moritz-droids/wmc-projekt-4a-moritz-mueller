@@ -47,6 +47,12 @@ export async function castVote(req, res) {
       });
     }
 
+    if (room.status === "closed") {
+      return res.status(409).json({
+        error: "Voting is closed for this room",
+      });
+    }
+
     const isMember = await isUserRoomMember(roomId, userId);
 
     if (!isMember) {
